@@ -1,17 +1,23 @@
-import { Component } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs/Observable";
+import {Component, OnInit} from '@angular/core';
+import {UsersService} from "./users-service/users.service";
+import {IUser, IUsers} from "./models/users.model";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
     users: IUser[];
 
-    constructor(private http: HttpClient){
-        this.getJSON()
+    constructor(private usersService: UsersService){}
+
+    ngOnInit(){
+        this.getJSON();
+    }
+
+    getJSON(){
+        this.usersService.getJSON()
             .subscribe((data: IUsers) => {
                 this.users = data.users;
                 console.error('%c users fetched ', 'background: green; color: white', this.users)
@@ -20,22 +26,6 @@ export class AppComponent {
             })
     }
 
-    getJSON(): Observable<IUsers>{
-        return this.http.get<IUsers>('./assets/users.json');
-    }
 
-}
 
-interface IUsers {
-    users: IUser[]
-}
-
-interface IUser{
-    guid: string,
-    name: {
-        first: string,
-        last: string
-    },
-    email: string,
-    phone: string
 }
