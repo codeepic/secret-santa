@@ -4,7 +4,18 @@ import {IUser, IUsers} from "./models/users.model";
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  template: `
+      <div class="wrapper">
+          <h1>Secret Santa application</h1>
+          <p>Below is a list of the secret santa pairings.</p>
+          
+          <ol>
+            <li *ngFor="let user of users">
+               <xg-user [user]="user"></xg-user> 
+            </li>
+          </ol>
+      </div>
+  `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
