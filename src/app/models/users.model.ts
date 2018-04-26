@@ -14,4 +14,5 @@ export interface IUser{
 
 export interface IParticipant extends IUser{
     assignedGuid: string;
+    hidden: boolean
 }

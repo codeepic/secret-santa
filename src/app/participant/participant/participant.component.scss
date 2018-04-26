@@ -1,0 +1,14 @@
+.participant{
+  display: inline-block;
+
+  .hidden{
+    opacity: 0;
+  }
+
+  button{
+    margin: 0 8px;
+    width: 50px;
+    text-align: center;
+
+  }
+}

@@ -18,20 +18,25 @@ import {IParticipant, IUser, IUsers} from "./models/users.model";
           </ol>
 
           <p>
-              <button (click)="assignPeople()">Assign People</button>
+              <button (click)="assignParticipants()">Assign People</button>
           </p>
 
           <section *ngIf="participants?.length > 0">
               <h2>Secret Santa Pairings</h2>
+              <p></p>
               <ul>
                   <li *ngFor="let participant of participants">
                       <p>
                           <user [user]="participant"></user>
                           has been assigned
-                          <user [user]="getUserByGuid(participant.assignedGuid)"></user>
+                          <participant [participant]="getByGuid(participant.assignedGuid)" [areAllParticipantsHidden]="areAllParticipantsHidden"></participant>
                       </p>
                   </li>
               </ul>
+              
+              <p>
+                  <button (click)="toggleAllParticipants()">toggle all</button>
+              </p>
           </section>
 
       </div>
@@ -41,6 +46,7 @@ import {IParticipant, IUser, IUsers} from "./models/users.model";
 export class AppComponent implements OnInit{
     users: IUser[];
     participants: IParticipant[];
+    areAllParticipantsHidden: boolean = true;
 
     constructor(private usersService: UsersService){}
 
@@ -57,30 +63,36 @@ export class AppComponent implements OnInit{
             })
     }
 
-    assignPeople(){
-        const shuffledUsers = this.shuffle(this.users),
-            len = shuffledUsers.length;
+    assignParticipants(){
+        const shuffled = this.shuffle(this.users),
+            len = shuffled.length;
 
         this.participants = [];
 
         for(let i = 0; i < len; i++){
-            const assignedUser = {
-                ...shuffledUsers[i],
-                assignedGuid: shuffledUsers[(i+1) % len].guid
+            const participant = {
+                ...shuffled[i],
+                assignedGuid: shuffled[(i+1) % len].guid,
+                hidden: true
             };
 
-            this.participants.push(assignedUser)
+            this.participants.push(participant)
         }
     }
 
-    getUserByGuid(guid: string){
-        const len = this.users.length;
+    getByGuid(guid: string): IParticipant{
+        const len = this.participants.length;
 
         for(let i = 0; i < len; i++){
-            if(this.users[i].guid === guid){
-                return this.users[i];
+            if(this.participants[i].guid === guid){
+                return this.participants[i];
             }
         }
+    }
+
+    toggleAllParticipants(){
+        this.areAllParticipantsHidden = !this.areAllParticipantsHidden;
+        this.participants = this.participants.map(p => ({...p, hidden: this.areAllParticipantsHidden}));
     }
 
     shuffle(arrParam: any[]): any[]{

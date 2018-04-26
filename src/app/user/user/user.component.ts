@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {IParticipant, IUser} from "../../models/users.model";
 
 @Component({
@@ -9,5 +9,5 @@ import {IParticipant, IUser} from "../../models/users.model";
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent{
-    @Input() user: IUser | IParticipant;
+    @Input() user: IUser;
 }
