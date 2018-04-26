@@ -11,3 +11,7 @@ export interface IUser{
     email: string,
     phone: string
 }
+
+export interface IParticipant extends IUser{
+    assignedGuid: string;
+}

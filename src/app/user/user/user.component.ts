@@ -1,21 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IUser} from "../../models/users.model";
+import {IParticipant, IUser} from "../../models/users.model";
 
 @Component({
-  selector: 'xg-user',
+  selector: 'user',
   template: `
-      <p>
-          {{user.name.first}} {{user.name.last}} - {{user.email}}
-      </p>
+      <em>{{user.name.first}} {{user.name.last}}</em>
   `,
   styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit {
-    @Input() user: IUser;
-
-    constructor() { }
-
-    ngOnInit() {
-    }
-
+export class UserComponent{
+    @Input() user: IUser | IParticipant;
 }

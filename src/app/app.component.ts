@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from "./users-service/users.service";
-import {IUser, IUsers} from "./models/users.model";
+import {IParticipant, IUser, IUsers} from "./models/users.model";
 
 @Component({
   selector: 'app-root',
@@ -8,34 +8,39 @@ import {IUser, IUsers} from "./models/users.model";
       <div class="wrapper">
           <h1>Secret Santa application</h1>
           <p>Below is a list of the secret santa pairings.</p>
-          
-          
-          <h2>Users</h2>
+
+
+          <h2>Secret Santa Participants</h2>
           <ol>
-            <li *ngFor="let user of users">
-               <xg-user [user]="user"></xg-user> 
-            </li>
-          </ol>
-          
-          <p><button (click)="generatePairs()">generate random pairs</button></p>
-          <p><button (click)="shuffleArray()">shuffle users</button></p>
-          
-          <h2>Pairs</h2>
-          <ol>
-              <li *ngFor="let pair of pairs">
-                  <p><xg-user [user]="pair.first"></xg-user></p>
-                  <p><xg-user [user]="pair.second"></xg-user></p>
+              <li *ngFor="let user of users">
+                  <user [user]="user"></user>
               </li>
           </ol>
-          
-          
+
+          <p>
+              <button (click)="assignPeople()">Assign People</button>
+          </p>
+
+          <section *ngIf="participants?.length > 0">
+              <h2>Secret Santa Pairings</h2>
+              <ul>
+                  <li *ngFor="let participant of participants">
+                      <p>
+                          <user [user]="participant"></user>
+                          has been assigned
+                          <user [user]="getUserByGuid(participant.assignedGuid)"></user>
+                      </p>
+                  </li>
+              </ul>
+          </section>
+
       </div>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
     users: IUser[];
-    pairs: {first: IUser, second: IUser}[];
+    participants: IParticipant[];
 
     constructor(private usersService: UsersService){}
 
@@ -47,41 +52,51 @@ export class AppComponent implements OnInit{
         this.usersService.getJSON()
             .subscribe((data: IUsers) => {
                 this.users = data.users;
-                console.error('%c users fetched ', 'background: green; color: white', this.users)
             }, error => {
                 console.error('%c something went wrong ', 'background: red; color: white', error)
             })
     }
 
-    generatePairs(){
-        this.pairs = [];
-        const numOfPairs = Math.floor(this.users.length / 2);
+    assignPeople(){
+        const shuffledUsers = this.shuffle(this.users),
+            len = shuffledUsers.length;
 
-        //wrong
-        for(let i = 0; i < numOfPairs; i++){
-            const pair = {
-                first: this.users[i],
-                second: this.users[i + numOfPairs]
+        this.participants = [];
+
+        for(let i = 0; i < len; i++){
+            const assignedUser = {
+                ...shuffledUsers[i],
+                assignedGuid: shuffledUsers[(i+1) % len].guid
             };
 
-            this.pairs.push(pair);
-            console.log('PAIR:::: ', pair);
+            this.participants.push(assignedUser)
         }
-
-        console.log(numOfPairs, '  sss   ', this.pairs);
     }
 
-    shuffleArray(){
-        let length = this.users.length,
+    getUserByGuid(guid: string){
+        const len = this.users.length;
+
+        for(let i = 0; i < len; i++){
+            if(this.users[i].guid === guid){
+                return this.users[i];
+            }
+        }
+    }
+
+    shuffle(arrParam: any[]): any[]{
+        let arr = arrParam.slice(),
+            length = arr.length,
             temp,
             i;
 
         while(length){
             i = Math.floor(Math.random() * length--);
 
-            temp = this.users[length];
-            this.users[length] = this.users[i];
-            this.users[i] = temp;
+            temp = arr[length];
+            arr[length] = arr[i];
+            arr[i] = temp;
         }
+
+        return arr;
     }
 }
