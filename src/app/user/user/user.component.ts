@@ -5,9 +5,8 @@ import {IUser} from "../../models/users.model";
   selector: 'xg-user',
   template: `
       <p>
-          {{user.name.first}} {{user.name.last}}
+          {{user.name.first}} {{user.name.last}} - {{user.email}}
       </p>
-      <p>{{user.email}}</p>
   `,
   styleUrls: ['./user.component.scss']
 })
